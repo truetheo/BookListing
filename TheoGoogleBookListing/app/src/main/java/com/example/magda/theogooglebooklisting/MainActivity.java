@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         setContentView(R.layout.activity_main);
 
 
-
         // Find a reference to the {@link ListView} in the layout
         ListView booksListView = (ListView) findViewById(R.id.list_view);
         key_word = (EditText) findViewById(R.id.edit_textbox);
@@ -48,23 +47,24 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mEmptyStateTextView = (TextView) findViewById(R.id.empty_view);
         booksListView.setEmptyView(mEmptyStateTextView);
 
+
+
         // Create a new adapter that takes an empty list of books as input
         mAdapter = new GoogleBookAdapter(this, new ArrayList<GoogleBook>());
 
         // Set the adapter on the {@link ListView}
         // so the list can be populated in the user interface
         booksListView.setAdapter(mAdapter);
-        if(first){
-            mEmptyStateTextView.setText(R.string.first_search);
-            first = false;
-        }
+
         if (isConnected()) {
+            mAdapter.clear();
             LoaderManager loaderManager = getLoaderManager();
             // Initialize the loader. Pass in the int ID constant defined above and pass in null for
             // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
             // because this activity implements the LoaderCallbacks interface).
             loaderManager.initLoader(LOADER_ID, null, MainActivity.this);
         } else {
+            mAdapter.clear();
             // Otherwise, display error
             loadingIndicator.setVisibility(View.GONE);
             // Update empty state with no connection error message
@@ -79,8 +79,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     // Get a reference to the LoaderManager, in order to interact with loaders.
                     mAdapter.clear();
                     loadingIndicator.setVisibility(View.VISIBLE);
-                    getLoaderManager().restartLoader(LOADER_ID,null,MainActivity.this);
+                    getLoaderManager().restartLoader(LOADER_ID, null, MainActivity.this);
                 } else {
+                    mAdapter.clear();
                     // Otherwise, display error
                     // First, hide loading indicator so error message will be visible
                     loadingIndicator.setVisibility(View.GONE);
@@ -106,10 +107,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onLoadFinished(Loader<List<GoogleBook>> loader, List<GoogleBook> books) {
         // Hide loading indicator because the data has been loaded
         loadingIndicator.setVisibility(View.GONE);
-
-        // Set empty state text to display "nothing to show."
-        mEmptyStateTextView.setText(R.string.no_books);
-
+        if (first) {
+            mEmptyStateTextView.setText(R.string.first_search);
+            first = false;
+        }else {
+            mEmptyStateTextView.setText(R.string.no_books);
+        }
         // Clear the adapter of previous books data
         mAdapter.clear();
 
@@ -129,7 +132,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public String StringToKey(String string) {
         return string.toLowerCase().replace(" ", "+");
     }
-    public boolean isConnected(){
+
+    public boolean isConnected() {
         // Get a reference to the ConnectivityManager to check state of network connectivity
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -137,5 +141,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         return (networkInfo != null && networkInfo.isConnected());
     }
+
+
 
 }

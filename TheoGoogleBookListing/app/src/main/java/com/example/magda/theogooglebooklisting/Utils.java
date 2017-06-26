@@ -167,21 +167,31 @@ public final class Utils {
                 // key called "volumeInfo", which represents a list of detailed information
                 // for that book.
                 JSONObject volumeInfo = currentBook.getJSONObject("volumeInfo");
-
-                // Extract the value for the key called "title"
-                String title = volumeInfo.getString("title");
-
+                String title = "";
+                if (volumeInfo.has("title")) {
+                    // Extract the value for the key called "title"
+                    title = volumeInfo.getString("title");
+                } else{
+                    title = "No title";
+                }
                 // Extract the Array for the key called "authors"
 
-                JSONArray authorsArray = volumeInfo.getJSONArray("authors");
+
+
                 String authors="";
-                for(int j=0; j<authorsArray.length();j++){
-                    if (j == 0) {
-                        authors+=authorsArray.getString(j);
-                    }else {
-                        authors += ", " + authorsArray.getString(j);
+                if (volumeInfo.has("authors")) {
+                    JSONArray authorsArray= volumeInfo.getJSONArray("authors");
+                    for(int j=0; j<authorsArray.length();j++){
+                        if (j == 0) {
+                            authors+=authorsArray.getString(j);
+                        }else {
+                            authors += ", " + authorsArray.getString(j);
+                        }
                     }
+                } else {
+                    authors = "Author unknown";
                 }
+
 
                 // Create a new {@link GoogleBook} object with the title, author.
                 GoogleBook book = new GoogleBook(title, authors);

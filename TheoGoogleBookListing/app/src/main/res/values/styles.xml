@@ -7,5 +7,13 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+    <style name="titleStyle">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">italic</item>
+    </style>
+    <style name="authorsStyle">
+        <item name="android:textSize">10sp</item>
+        <item name="android:color">@color/colorAuthors</item>
+    </style>
 
 </resources>
